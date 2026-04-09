@@ -7,7 +7,7 @@ import { useCollections } from "../collections/collectionHooks";
 import CreateDocumentForm from "../documents/CreateDocumentForm";
 import DocumentList from "../documents/DocumentList";
 import { useDocuments } from "../documents/documentHooks";
-import WorkspaceSidebar from "./WorkSpaceSidebar";
+import WorkspaceSidebar from "./WorkspaceSidebar";
 
 const getErrorMessage = (error: unknown, fallback: string) => {
   if (isAxiosError<{ message?: string }>(error)) {

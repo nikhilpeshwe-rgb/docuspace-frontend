@@ -5,6 +5,10 @@ import AppShell from "../../components/layout/AppShell";
 import VersionHistoryPanel from "./VersionHistoryPanel";
 import { useDocument, useUpdateDocument } from "./documentHooks";
 import type { DocumentResponse } from "./document.types";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
+import Textarea from "../../components/ui/Textarea";
+import Message from "../../components/ui/Message";
 
 interface DocumentEditorFormProps {
   document: DocumentResponse;
@@ -34,31 +38,24 @@ const DocumentEditorForm = ({
       <div style={{ marginBottom: "12px" }}>
         <label>Title</label>
         <br />
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={{ padding: "8px", width: "100%", maxWidth: "700px" }}
-        />
+        <Input value={title} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)} />
       </div>
 
       <div style={{ marginBottom: "12px" }}>
         <label>Content</label>
         <br />
-        <textarea
+        <Textarea 
           value={content}
-          onChange={(e) => setContent(e.target.value)}
-          rows={18}
-          style={{ padding: "8px", width: "100%", maxWidth: "700px" }}
-        />
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setContent(e.target.value)} 
+          rows={18} />
       </div>
 
-      <button type="submit" disabled={isPending}>
+      <Button type="submit">
         {isPending ? "Saving..." : "Save"}
-      </button>
+      </Button>
 
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      {formError && <p style={{ color: "red" }}>{formError}</p>}
+      {message && <Message type="success" text={message} />}
+      {formError && <Message type="error" text={formError} />}
     </form>
   );
 };

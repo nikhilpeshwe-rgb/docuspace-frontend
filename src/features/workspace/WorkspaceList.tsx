@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import type { WorkspaceResponse } from "./workspace.types";
+import Card from "../../components/ui/card";
 
 interface WorkspaceListProps {
   workspaces: WorkspaceResponse[];
@@ -13,22 +14,19 @@ const WorkspaceList = ({ workspaces }: WorkspaceListProps) => {
   }
 
   return (
-    <div>
+     <div>
       {workspaces.map((workspace) => (
-        <div
-          key={workspace.id}
-          onClick={() => navigate(`/workspaces/${workspace.id}`)}
-          style={{
-            border: "1px solid #ddd",
-            padding: "12px",
-            marginBottom: "12px",
-            borderRadius: "8px",
-            cursor: "pointer",
-          }}
-        >
-          <h3>{workspace.name}</h3>
-          <p>Workspace ID: {workspace.id}</p>
-        </div>
+        <Card key={workspace.id}>
+          <div
+            onClick={() => navigate(`/workspaces/${workspace.id}`)}
+            style={{ cursor: "pointer" }}
+          >
+            <h3 style={{ margin: "0 0 6px 0" }}>{workspace.name}</h3>
+            <p style={{ margin: 0, color: "#666" }}>
+              Workspace ID: {workspace.id}
+            </p>
+          </div>
+        </Card>
       ))}
     </div>
   );

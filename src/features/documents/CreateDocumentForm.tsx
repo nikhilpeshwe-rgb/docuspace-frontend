@@ -1,6 +1,10 @@
 import { useState, type SyntheticEvent } from "react";
 import { useCreateDocument } from "./documentHooks";
 import { AxiosError } from "axios";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
+import Message from "../../components/ui/Message";
+import Textarea from "../../components/ui/Textarea";
 
 interface CreateDocumentFormProps {
   collectionId: number;
@@ -43,33 +47,30 @@ const CreateDocumentForm = ({ collectionId }: CreateDocumentFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} style={{ marginBottom: "24px" }}>
-      <h2>Create Document</h2>
+      <h3>Create Document</h3>
 
-      <div style={{ marginBottom: "8px" }}>
-        <input
-          type="text"
-          placeholder="Enter document title"
+      <div style={{ marginBottom: "8px", maxWidth: "500px" }}>
+        <Input
+          placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          style={{ padding: "8px", width: "300px" }}
         />
       </div>
 
-      <div style={{ marginBottom: "8px" }}>
-        <textarea
-          placeholder="Enter document content"
+      <div style={{ marginBottom: "8px", maxWidth: "500px" }}>
+        <Textarea
+          placeholder="Content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          rows={5}
-          style={{ padding: "8px", width: "300px" }}
+          rows={4}
         />
       </div>
 
-      <button type="submit" disabled={createDocumentMutation.isPending}>
+      <Button type="submit" disabled={createDocumentMutation.isPending}>
         {createDocumentMutation.isPending ? "Creating..." : "Create"}
-      </button>
+      </Button>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <Message type="error" text={error} />}
     </form>
   );
 };

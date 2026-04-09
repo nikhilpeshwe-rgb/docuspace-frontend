@@ -5,6 +5,7 @@ import RegisterPage from "../features/auth/RegisterPage";
 import DocumentPage from "../features/documents/DocumentPage";
 import WorkspaceDetailsPage from "../features/workspace/WorkspaceDetailsPage";
 import DashboardPage from "../pages/DashboardPage";
+import SearchPage from "../features/search/SearchPage";
 
 const AppRouter = () => {
   return (
@@ -37,6 +38,15 @@ const AppRouter = () => {
           element={
             <ProtectedRoute>
               <DocumentPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/search"
+          element={
+            <ProtectedRoute>
+              <SearchPage />
             </ProtectedRoute>
           }
         />
