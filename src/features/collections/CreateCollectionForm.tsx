@@ -2,6 +2,7 @@ import { type SyntheticEvent, useState } from "react";
 import { useCreateCollection } from "./collectionHooks";
 import { AxiosError } from "axios";
 import Button from "../../components/ui/Button";
+import Message from "../../components/ui/Message";
 
 interface CreateCollectionFormProps {
     workspaceId: number;
@@ -51,6 +52,7 @@ const CreateCollectionForm = ({ workspaceId }: CreateCollectionFormProps) => {
             <Button type="submit" disabled={createCollectionMutation.isPending}>
                 {createCollectionMutation.isPending ? "Creating..." : "Create"}
             </Button>
+            {error && <Message type="error" text={error} />}
         </form>
     );
 };

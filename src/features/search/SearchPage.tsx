@@ -7,7 +7,7 @@ import { useSearchDocuments } from "./searchHooks";
 import SearchResults from "./SearchResults";
 import EmptyState from "../../components/ui/EmptyState";
 import ErrorState from "../../components/ui/ErrorState";
-import Loader from "../../components/ui/loader";
+import Loader from "../../components/ui/Loader";
 
 const getErrorMessage = (error: unknown) => {
   if (isAxiosError<{ message?: string }>(error)) {
