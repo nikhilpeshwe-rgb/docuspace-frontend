@@ -5,6 +5,9 @@ import AppShell from "../../components/layout/AppShell";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useSearchDocuments } from "./searchHooks";
 import SearchResults from "./SearchResults";
+import EmptyState from "../../components/ui/EmptyState";
+import ErrorState from "../../components/ui/ErrorState";
+import Loader from "../../components/ui/loader";
 
 const getErrorMessage = (error: unknown) => {
   if (isAxiosError<{ message?: string }>(error)) {
@@ -69,14 +72,20 @@ const SearchPage = () => {
             />
           </div>
 
-          {!normalizedQuery && <p>Start typing to search your documents.</p>}
+          {!normalizedQuery && (
+            <EmptyState
+              title="Start your search"
+              description="Search documents by title or content."
+            />
+          )}
 
-          {!!normalizedQuery && isLoading && <p>Searching...</p>}
+          {!!normalizedQuery && isLoading && <Loader text="Searching documents..." />}
 
           {!!normalizedQuery && isError && (
-            <p style={{ color: "red" }}>
-              {getErrorMessage(error)}
-            </p>
+            <ErrorState
+              title="Search failed"
+              message={getErrorMessage(error)}
+            />
           )}
 
           {!!normalizedQuery && !isLoading && !isError && (

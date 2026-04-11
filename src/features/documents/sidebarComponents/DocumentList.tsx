@@ -1,28 +1,53 @@
 import { Link, useParams } from "react-router-dom";
 import { useDocuments } from "../documentHooks";
+import { isAxiosError } from "axios";
+import EmptyState from "../../../components/ui/EmptyState";
+import ErrorState from "../../../components/ui/ErrorState";
+import Loader from "../../../components/ui/Loader";
 
 type DocumentListProps = {
   collectionId: number;
 };
 
+const getErrorMessage = (error: unknown) => {
+  if (isAxiosError<{ message?: string }>(error)) {
+    return error.response?.data?.message ?? "Failed to load documents";
+  }
+  return "Failed to load documents";
+};
+
 export default function DocumentList({ collectionId }: DocumentListProps) {
   const { id: workspaceId } = useParams();
-  const { data: documents, isLoading, isError } = useDocuments(collectionId);
+  const { data: documents = [], isLoading, isError, error } = useDocuments(collectionId);
 
   if (isLoading) {
-    return <div className="text-sm text-gray-500">Loading documents...</div>;
+    return <Loader text="Loading documents..." />;
   }
 
   if (isError) {
-    return <div className="text-sm text-red-500">Failed to load documents.</div>;
+    return (
+      <ErrorState
+        title="Unable to load documents"
+        message={getErrorMessage(error)}
+      />
+    );
   }
 
   return (
-    <div>
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
-        Documents
-      </h2>
+    <div className="space-y-3">
+      <div>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+          Documents
+        </h2>
+      </div>
 
+      {documents.length === 0 ? (
+        <EmptyState
+          title="No documents yet"
+          description="Create a document in the selected collection."
+          className="p-4"
+        />
+      ) : (
       <div className="space-y-2">
         {documents?.map((document) => (
           <Link
@@ -34,6 +59,7 @@ export default function DocumentList({ collectionId }: DocumentListProps) {
           </Link>
         ))}
       </div>
+      )}
     </div>
   );
 }

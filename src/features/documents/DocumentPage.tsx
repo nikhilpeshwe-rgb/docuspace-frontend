@@ -9,6 +9,8 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
 import Message from "../../components/ui/Message";
+import ErrorState from "../../components/ui/ErrorState";
+import Loader from "../../components/ui/Loader";
 
 interface DocumentEditorFormProps {
   document: DocumentResponse;
@@ -50,7 +52,7 @@ const DocumentEditorForm = ({
           rows={18} />
       </div>
 
-      <Button type="submit">
+      <Button type="submit" disabled={isPending}>
         {isPending ? "Saving..." : "Save"}
       </Button>
 
@@ -102,30 +104,46 @@ const DocumentPage = () => {
   };
 
   if (!id || Number.isNaN(documentId)) {
-    return <p>Invalid document ID.</p>;
-  }
+  return (
+    <div className="p-6">
+      <ErrorState title="Invalid document" message="The document ID is missing or invalid." />
+    </div>
+  );
+}
 
   return (
     <AppShell
       sidebar={
-        <div>
-          <button onClick={() => navigate(-1)} style={{ marginBottom: "16px" }}>
+        <div className="space-y-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="text-sm font-medium text-blue-600 hover:text-blue-700"
+          >
             ← Back
           </button>
-          <h2>Document</h2>
-          <p>ID: {documentId}</p>
+
+          <div className="rounded-lg border border-slate-200 bg-white p-4">
+            <h2 className="text-lg font-semibold text-slate-800">Document</h2>
+            <p className="mt-1 text-sm text-slate-500">ID: {documentId}</p>
+          </div>
         </div>
       }
       main={
-        <div>
-          <h1 style={{ marginTop: 0 }}>Document Editor</h1>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-slate-900">Document Editor</h1>
+            <p className="mt-1 text-sm text-slate-500">
+              Edit the document content and save changes.
+            </p>
+          </div>
 
-          {isLoading && <p>Loading document...</p>}
+          {isLoading && <Loader text="Loading document..." />}
 
           {isError && (
-            <p style={{ color: "red" }}>
-              {getErrorMessage(error)}
-            </p>
+            <ErrorState
+              title="Unable to load document"
+              message={getErrorMessage(error)}
+            />
           )}
 
           {!isLoading && !isError && document && (

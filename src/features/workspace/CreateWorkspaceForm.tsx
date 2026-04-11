@@ -46,9 +46,12 @@ const CreateWorkspaceForm = () => {
           onChange={(e) => setName(e.target.value)}
         />
 
-      <Button type="submit" disabled={createWorkspaceMutation.isPending}>
+        <Button
+          type="submit"
+          disabled={createWorkspaceMutation.isPending}
+        >
           {createWorkspaceMutation.isPending ? "Creating..." : "Create"}
-      </Button>
+        </Button>
       </div>
 
       {error && <Message type="error" text={error} />}

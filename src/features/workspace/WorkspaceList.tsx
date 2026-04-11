@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import type { WorkspaceResponse } from "./workspace.types";
 import Card from "../../components/ui/card";
+import EmptyState from "../../components/ui/EmptyState";
 
 interface WorkspaceListProps {
   workspaces: WorkspaceResponse[];
@@ -10,23 +11,31 @@ const WorkspaceList = ({ workspaces }: WorkspaceListProps) => {
   const navigate = useNavigate();
 
   if (workspaces.length === 0) {
-    return <p>No workspaces found.</p>;
+    return (
+      <EmptyState
+        title="No workspaces yet"
+        description="Create your first workspace to start organizing collections and documents."
+      />
+    );
   }
 
   return (
-     <div>
+    <div className="space-y-4">
       {workspaces.map((workspace) => (
-        <Card key={workspace.id}>
-          <div
-            onClick={() => navigate(`/workspaces/${workspace.id}`)}
-            style={{ cursor: "pointer" }}
-          >
-            <h3 style={{ margin: "0 0 6px 0" }}>{workspace.name}</h3>
-            <p style={{ margin: 0, color: "#666" }}>
-              Workspace ID: {workspace.id}
-            </p>
-          </div>
-        </Card>
+        <div
+          key={workspace.id}
+          onClick={() => navigate(`/workspaces/${workspace.id}`)}
+          className="cursor-pointer transition hover:scale-[1.01]"
+        >
+          <Card key={workspace.id}>
+            <div className="space-y-1">
+              <h3 className="text-lg font-semibold text-slate-800">{workspace.name}</h3>
+              <p className="text-sm text-slate-500">
+                Workspace ID: {workspace.id}
+              </p>
+            </div>
+          </Card>
+        </div>
       ))}
     </div>
   );

@@ -1,5 +1,10 @@
 import { AxiosError } from "axios";
 import { useRestoreDocumentVersion, useDocumentVersions } from "./documentHooks";
+import Button from "../../components/ui/Button";
+import Card from "../../components/ui/card";
+import EmptyState from "../../components/ui/EmptyState";
+import ErrorState from "../../components/ui/ErrorState";
+import Loader from "../../components/ui/Loader";
 
 interface VersionHistoryPanelProps {
   documentId: number;
@@ -38,52 +43,60 @@ const VersionHistoryPanel = ({ documentId }: VersionHistoryPanelProps) => {
   };
 
   return (
-    <div>
-      <h2 style={{ marginTop: 0 }}>Version History</h2>
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-lg font-semibold text-slate-900">Version History</h2>
+        <p className="mt-1 text-sm text-slate-500">
+          Review previous versions and restore when needed.
+        </p>
+      </div>
 
-      {isLoading && <p>Loading versions...</p>}
+      {isLoading && <Loader text="Loading versions..." />}
 
       {isError && (
-        <p style={{ color: "red" }}>
-          {getErrorMessage(error)}
-        </p>
+        <ErrorState
+          title="Unable to load versions"
+          message={getErrorMessage(error)}
+        />
       )}
 
       {!isLoading && !isError && versions.length === 0 && (
-        <p>No versions yet.</p>
+        <EmptyState
+          title="No versions yet"
+          description="Versions will appear here after document edits are saved."
+        />
       )}
 
-      {!isLoading &&
-        !isError &&
-        versions.map((version) => (
-          <div
-            key={version.id}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-              padding: "12px",
-              marginBottom: "12px",
-            }}
-          >
-            <h4 style={{ marginTop: 0, marginBottom: "8px" }}>
-              Version {version.versionNumber}
-            </h4>
+      {!isLoading && !isError && versions.length > 0 && (
+        <div className="space-y-3">
+          {versions.map((version) => (
+            <Card key={version.id}>
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-base font-semibold text-slate-800">
+                    Version {version.versionNumber}
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Title: {version.title}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {new Date(version.createdAt).toLocaleString()}
+                  </p>
+                </div>
 
-            <p style={{ margin: "4px 0" }}>
-              <strong>Title:</strong> {version.title}
-            </p>
-            <p style={{ margin: "4px 0", fontSize: "14px", color: "#666" }}>
-              {new Date(version.createdAt).toLocaleString()}
-            </p>
-
-            <button
-              onClick={() => handleRestore(version.id)}
-              disabled={restoreMutation.isPending}
-            >
-              {restoreMutation.isPending ? "Restoring..." : "Restore"}
-            </button>
-          </div>
-        ))}
+                <Button
+                  type="button"
+                  onClick={() => handleRestore(version.id)}
+                  disabled={restoreMutation.isPending}
+                  className="w-full"
+                >
+                  {restoreMutation.isPending ? "Restoring..." : "Restore"}
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

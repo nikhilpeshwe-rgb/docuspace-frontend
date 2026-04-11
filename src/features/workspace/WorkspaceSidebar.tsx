@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import type { CollectionResponse } from "../collections/collection.types";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/card";
+import EmptyState from "../../components/ui/EmptyState";
 
 interface WorkspaceSidebarProps {
   workspaceId: number;
@@ -17,48 +18,65 @@ const WorkspaceSidebar = ({
   const navigate = useNavigate();
 
   return (
-    <div>
-      <Button
-        variant="secondary"
-        onClick={() => navigate("/dashboard")}
-        style={{ width: "100%", marginBottom: "8px" }}
-      >
-        ← Dashboard
-      </Button>
+    <div className="space-y-4 overflow-x-hidden">
+      <div className="space-y-2">
+        <Button
+          onClick={() => navigate("/dashboard")}
+          className="w-full"
+        >
+          ← Dashboard
+        </Button>
 
-      <Button
-        variant="secondary"
-        onClick={() => navigate("/search")}
-        style={{ width: "100%", marginBottom: "16px" }}
-      >
-        Search
-      </Button>
+        <Button
+          onClick={() => navigate("/search")}
+          className="w-full"
+        >
+          Search
+        </Button>
+      </div>
 
-      <h3>Workspace</h3>
-      <p style={{ color: "#666" }}>ID: {workspaceId}</p>
+      <Card>
+        <div className="space-y-1">
+          <h3 className="text-lg font-semibold text-slate-800">Workspace</h3>
+          <p className="text-sm text-slate-500">ID: {workspaceId}</p>
+        </div>
+      </Card>
 
-      <h4>Collections</h4>
+      <div className="space-y-3">
+        <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+          Collections
+        </h4>
 
-      {collections.length === 0 && <p>No collections yet.</p>}
+        {collections.length === 0 ? (
+          <EmptyState
+            title="No collections yet"
+            description="Create one to start organizing documents."
+            className="p-4"
+          />
+        ) : (
+          <div className="space-y-2 overflow-y-auto overflow-x-hidden min-w-0">
+            {collections.map((collection) => {
+              const isSelected = selectedCollectionId === collection.id;
 
-      {collections.map((collection) => (
-        <Card key={collection.id}>
-          <div
-            onClick={() =>
-              navigate(`/workspaces/${workspaceId}?collectionId=${collection.id}`)
-            }
-            style={{
-              cursor: "pointer",
-              background:
-                selectedCollectionId === collection.id ? "#f1f5f9" : "white",
-              padding: "6px",
-              borderRadius: "6px",
-            }}
-          >
-            {collection.name}
+              return (
+                <button
+                  key={collection.id}
+                  type="button"
+                  onClick={() =>
+                    navigate(`/workspaces/${workspaceId}?collectionId=${collection.id}`)
+                  }
+                  className={`w-full rounded-md border px-3 py-2 text-left text-sm transition w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap ${isSelected
+                      ? "border-blue-200 bg-blue-50 font-medium text-blue-700"
+                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                    }`}
+                >
+                  {collection.name}
+                </button>
+              );
+            })}
           </div>
-        </Card>
-      ))}
+        )}
+      </div>
     </div>
   );
 };

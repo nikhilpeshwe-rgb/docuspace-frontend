@@ -8,36 +8,24 @@ interface AppShellProps {
 
 const AppShell = ({ sidebar, main, rightPanel }: AppShellProps) => {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: rightPanel ? "260px 1fr 320px" : "260px 1fr",
-        minHeight: "100vh",
-      }}
-    >
-      <aside
-        style={{
-          borderRight: "1px solid #e5e5e5",
-          padding: "20px",
-          background: "#fafafa",
-        }}
-      >
-        {sidebar}
-      </aside>
+    <div className="min-h-screen bg-slate-50">
+      <div className="mx-auto max-w-[1800px] grid grid-cols-1 gap-8 p-6 lg:grid-cols-[280px_minmax(0,1fr)_360px]">
+        {sidebar && (
+          <aside className="overflow-hidden h-fit rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto">
+            {sidebar}
+          </aside>
+        )}
 
-      <main style={{ padding: "24px" }}>{main}</main>
+        <main className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:p-6">
+          {main}
+        </main>
 
-      {rightPanel && (
-        <aside
-          style={{
-            borderLeft: "1px solid #e5e5e5",
-            padding: "20px",
-            background: "#fcfcfc",
-          }}
-        >
-          {rightPanel}
-        </aside>
-      )}
+        {rightPanel && (
+          <aside className="h-fit rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto">
+            {rightPanel}
+          </aside>
+        )}
+      </div>
     </div>
   );
 };

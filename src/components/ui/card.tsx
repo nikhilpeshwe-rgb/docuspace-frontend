@@ -1,14 +1,6 @@
 const Card = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: "10px",
-        padding: "14px",
-        marginBottom: "12px",
-        background: "white",
-      }}
-    >
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       {children}
     </div>
   );

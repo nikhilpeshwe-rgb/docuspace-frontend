@@ -8,6 +8,9 @@ import CreateDocumentForm from "../documents/CreateDocumentForm";
 import DocumentList from "../documents/DocumentList";
 import { useDocuments } from "../documents/documentHooks";
 import WorkspaceSidebar from "./WorkspaceSidebar";
+import ErrorState from "../../components/ui/ErrorState";
+import EmptyState from "../../components/ui/EmptyState";
+import Loader from "../../components/ui/Loader";
 
 const getErrorMessage = (error: unknown, fallback: string) => {
   if (isAxiosError<{ message?: string }>(error)) {
@@ -46,48 +49,63 @@ const WorkspaceDetailsPage = () => {
   } = useDocuments(validSelectedCollectionId);
 
   if (!id || Number.isNaN(workspaceId)) {
-    return <p>Invalid workspace ID.</p>;
+    return (
+      <div className="p-6">
+        <ErrorState title="Invalid workspace" message="The workspace ID is missing or invalid." />
+      </div>
+    );
   }
 
   return (
     <AppShell
       sidebar={
-        collectionsLoading ? (
-          <p>Loading collections...</p>
-        ) : collectionsError ? (
-          <p style={{ color: "red" }}>
-            {getErrorMessage(collectionsErrorObject, "Failed to load collections")}
-          </p>
-        ) : (
-          <WorkspaceSidebar
-            workspaceId={workspaceId}
-            collections={collections}
-            selectedCollectionId={validSelectedCollectionId}
-          />
-        )
+        <div className="space-y-6">
+          {collectionsLoading ? (
+            <Loader text="Loading collections..." />
+          ) : collectionsError ? (
+            <ErrorState
+              title="Unable to load collections"
+              message={getErrorMessage(collectionsErrorObject, "Failed to load collections")}
+            />
+          ) : (
+            <>
+              <CreateCollectionForm workspaceId={workspaceId} />
+              <WorkspaceSidebar
+                workspaceId={workspaceId}
+                collections={collections}
+                selectedCollectionId={validSelectedCollectionId}
+              />
+            </>
+          )}
+        </div>
       }
       main={
-        <div>
-          <h1 style={{ marginTop: 0 }}>Workspace Details</h1>
-
-          <CreateCollectionForm workspaceId={workspaceId} />
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-slate-900">Workspace Details</h1>
+            <p className="mt-1 text-sm text-slate-500">
+              Manage documents inside the selected collection.
+            </p>
+          </div>
 
           {!validSelectedCollectionId && (
-            <p>Select a collection from the sidebar to view documents.</p>
+            <EmptyState
+              title="No collection selected"
+              description="Choose a collection from the sidebar to view and manage documents."
+            />
           )}
 
           {!!validSelectedCollectionId && (
             <>
               <CreateDocumentForm collectionId={validSelectedCollectionId} />
 
-              <h2>Documents</h2>
-
-              {documentsLoading && <p>Loading documents...</p>}
+              {documentsLoading && <Loader text="Loading documents..." />}
 
               {documentsError && (
-                <p style={{ color: "red" }}>
-                  {getErrorMessage(documentsErrorObject, "Failed to load documents")}
-                </p>
+                <ErrorState
+                  title="Unable to load documents"
+                  message={getErrorMessage(documentsErrorObject, "Failed to load documents")}
+                />
               )}
 
               {!documentsLoading && !documentsError && (

@@ -1,6 +1,7 @@
 import { type SyntheticEvent, useState } from "react";
 import { useCreateCollection } from "./collectionHooks";
 import { AxiosError } from "axios";
+import Button from "../../components/ui/Button";
 
 interface CreateCollectionFormProps {
     workspaceId: number;
@@ -37,26 +38,19 @@ const CreateCollectionForm = ({ workspaceId }: CreateCollectionFormProps) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} style={{ marginBottom: "24px" }}>
-            <h2>Create Collection</h2>
-
+        <form onSubmit={handleSubmit} className="space-y-3">
             <input
                 type="text"
-                placeholder="Enter collection name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                style={{
-                    padding: "8px",
-                    width: "300px",
-                    marginRight: "8px",
-                }}
+                placeholder="Enter collection name"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                disabled={createCollectionMutation.isPending}
             />
 
-            <button type="submit" disabled={createCollectionMutation.isPending}>
+            <Button type="submit" disabled={createCollectionMutation.isPending}>
                 {createCollectionMutation.isPending ? "Creating..." : "Create"}
-            </button>
-
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            </Button>
         </form>
     );
 };
