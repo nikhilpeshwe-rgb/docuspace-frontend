@@ -1,5 +1,8 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    {
+      "source": "/api/(.*)",
+      "destination": "http://docuspace-alb-480450197.us-east-1.elb.amazonaws.com/api/$1"
+    }
   ]
 }
