@@ -29,3 +29,24 @@ export interface DocumentVersionResponse {
   createdBy: number;
   createdAt: string;
 }
+
+export interface DocumentSummaryResponse {
+  documentId: number;
+  overview: string;
+  keyPoints: string[];
+  actionItems: string[];
+  generatedAt: string;
+}
+
+export type RewriteMode = "improve" | "shorten" | "expand" | "fix_grammar";
+
+export interface DocumentRewriteRequest {
+  mode: RewriteMode;
+}
+
+export interface DocumentRewriteResponse {
+  documentId: number;
+  mode: RewriteMode;
+  content: string;
+  generatedAt: string;
+}

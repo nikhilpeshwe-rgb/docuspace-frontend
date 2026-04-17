@@ -3,7 +3,10 @@ import type {
     CreateDocumentRequest,
     DocumentResponse,
     UpdateDocumentRequest,
-    DocumentVersionResponse
+    DocumentVersionResponse,
+    DocumentSummaryResponse,
+    DocumentRewriteRequest,
+    DocumentRewriteResponse
 } from "../features/documents/document.types";
 
 export const getDocumentsByCollectionApi = async (
@@ -62,5 +65,23 @@ export const restoreDocumentVersionApi = async ({
   const response = await apiClient.post(
     `/documents/${documentId}/restore/${versionId}`
   );
+  return response.data;
+};
+
+export const summarizeDocumentApi = async (
+  documentId: number
+): Promise<DocumentSummaryResponse> => {
+  const response = await apiClient.post(`/documents/${documentId}/summarize`);
+  return response.data;
+};
+
+export const rewriteDocumentApi = async ({
+  documentId,
+  data,
+}: {
+  documentId: number;
+  data: DocumentRewriteRequest;
+}): Promise<DocumentRewriteResponse> => {
+  const response = await apiClient.post(`/documents/${documentId}/rewrite`, data);
   return response.data;
 };
