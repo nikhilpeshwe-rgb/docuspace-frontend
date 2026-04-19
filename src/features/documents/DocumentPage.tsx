@@ -6,9 +6,10 @@ import VersionHistoryPanel from "./VersionHistoryPanel";
 import DocumentSummaryPanel from "./DocumentSummaryPanel";
 import DocumentRewritePanel from "./DocumentRewritePanel";
 import {
+  useAiJobStatus,
+  useCreateRewriteJob,
+  useCreateSummaryJob,
   useDocument,
-  useRewriteDocument,
-  useSummarizeDocument,
   useUpdateDocument,
 } from "./documentHooks";
 import { useDocumentAutosave } from "./documentHooks";
@@ -371,16 +372,20 @@ const DocumentPage = () => {
 
   const { data: document, isLoading, isError, error } = useDocument(documentId);
   const updateDocumentMutation = useUpdateDocument(documentId);
-  const summarizeDocumentMutation = useSummarizeDocument(documentId);
-  const rewriteDocumentMutation = useRewriteDocument(documentId);
 
-  const [summaryResult, setSummaryResult] =
-    useState<DocumentSummaryResponse | null>(null);
-  const [summaryError, setSummaryError] = useState("");
+  // sync
+  // const summarizeDocumentMutation = useSummarizeDocument(documentId);
+  // const rewriteDocumentMutation = useRewriteDocument(documentId);
 
-  const [rewriteResult, setRewriteResult] =
-    useState<DocumentRewriteResponse | null>(null);
-  const [rewriteError, setRewriteError] = useState("");
+  //async 
+  const createSummaryJobMutation = useCreateSummaryJob(documentId);
+  const createRewriteJobMutation = useCreateRewriteJob(documentId);
+
+  const [summaryJobId, setSummaryJobId] = useState<number | null>(null);
+  const [rewriteJobId, setRewriteJobId] = useState<number | null>(null);
+
+  const summaryJobQuery = useAiJobStatus(summaryJobId);
+  const rewriteJobQuery = useAiJobStatus(rewriteJobId);
 
   const getErrorMessage = (error: unknown) => {
     if (isAxiosError<{ message?: string }>(error)) {
@@ -390,37 +395,85 @@ const DocumentPage = () => {
     return "Failed to load document";
   };
 
-  const handleSummarizeSavedDocument = async () => {
-    setSummaryError("");
+  // sync
 
-    try {
-      const response = await summarizeDocumentMutation.mutateAsync();
-      setSummaryResult(response);
-    } catch (err: unknown) {
-      setSummaryError(
-        isAxiosError<{ message?: string }>(err)
-          ? err.response?.data?.message ?? "Failed to summarize document"
-          : "Failed to summarize document"
-      );
-      throw err;
-    }
+  // const handleSummarizeSavedDocument = async () => {
+  //   setSummaryError("");
+
+  //   try {
+  //     const response = await summarizeDocumentMutation.mutateAsync();
+  //     setSummaryResult(response);
+  //   } catch (err: unknown) {
+  //     setSummaryError(
+  //       isAxiosError<{ message?: string }>(err)
+  //         ? err.response?.data?.message ?? "Failed to summarize document"
+  //         : "Failed to summarize document"
+  //     );
+  //     throw err;
+  //   }
+  // };
+
+
+  // async
+  const handleSummarizeSavedDocument = async () => {
+    setSummaryJobId(null);
+
+    const response = await createSummaryJobMutation.mutateAsync();
+    setSummaryJobId(response.jobId);
   };
+
+  // sync
+  // const handleRewriteSavedDocument = async (mode: RewriteMode) => {
+  //   setRewriteError("");
+
+  //   try {
+  //     const response = await rewriteDocumentMutation.mutateAsync({ mode });
+  //     setRewriteResult(response);
+  //   } catch (err: unknown) {
+  //     setRewriteError(
+  //       isAxiosError<{ message?: string }>(err)
+  //         ? err.response?.data?.message ?? "Failed to rewrite document"
+  //         : "Failed to rewrite document"
+  //     );
+  //     throw err;
+  //   }
+  // };
+
+  // async\
 
   const handleRewriteSavedDocument = async (mode: RewriteMode) => {
-    setRewriteError("");
+    setRewriteJobId(null);
 
-    try {
-      const response = await rewriteDocumentMutation.mutateAsync({ mode });
-      setRewriteResult(response);
-    } catch (err: unknown) {
-      setRewriteError(
-        isAxiosError<{ message?: string }>(err)
-          ? err.response?.data?.message ?? "Failed to rewrite document"
-          : "Failed to rewrite document"
-      );
-      throw err;
-    }
+
+    const response = await createRewriteJobMutation.mutateAsync({
+      documentId,
+      mode,
+    });
+    setRewriteJobId(response.jobId);
   };
+
+  const summaryResult =
+    summaryJobQuery.data?.status === "COMPLETED" &&
+      summaryJobQuery.data.operationType === "SUMMARY"
+      ? (summaryJobQuery.data.result as DocumentSummaryResponse)
+      : null;
+
+  const summaryError =
+    summaryJobQuery.data?.status === "FAILED"
+      ? summaryJobQuery.data.errorMessage ?? "Failed to summarize document"
+      : "";
+
+  const rewriteResult =
+    rewriteJobQuery.data?.status === "COMPLETED" &&
+      rewriteJobQuery.data.operationType === "REWRITE"
+      ? (rewriteJobQuery.data.result as DocumentRewriteResponse)
+      : null;
+
+  const rewriteError =
+    rewriteJobQuery.data?.status === "FAILED"
+      ? rewriteJobQuery.data.errorMessage ?? "Failed to rewrite document"
+      : "";
+
 
   if (!id || Number.isNaN(documentId)) {
     return (
@@ -469,8 +522,18 @@ const DocumentPage = () => {
               key={`${document.id}-${document.updatedAt}`}
               document={document}
               isPending={updateDocumentMutation.isPending}
-              isSummarizing={summarizeDocumentMutation.isPending}
-              isRewriting={rewriteDocumentMutation.isPending}
+              // isSummarizing={summarizeDocumentMutation.isPending}
+              // isRewriting={rewriteDocumentMutation.isPending}
+              isSummarizing={
+                createSummaryJobMutation.isPending ||
+                summaryJobQuery.data?.status === "PENDING" ||
+                summaryJobQuery.data?.status === "PROCESSING"
+              }
+              isRewriting={
+                createRewriteJobMutation.isPending ||
+                rewriteJobQuery.data?.status === "PENDING" ||
+                rewriteJobQuery.data?.status === "PROCESSING"
+              }
               onSave={async (data) => {
                 await updateDocumentMutation.mutateAsync(data);
               }}
@@ -488,7 +551,7 @@ const DocumentPage = () => {
         <div className="space-y-6">
           <DocumentSummaryPanel
             summaryResult={summaryResult}
-            isLoading={summarizeDocumentMutation.isPending}
+            isLoading={updateDocumentMutation.isPending}
             error={summaryError}
           />
           <VersionHistoryPanel documentId={documentId} />

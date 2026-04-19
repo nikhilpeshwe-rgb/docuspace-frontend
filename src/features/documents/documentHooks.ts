@@ -1,6 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createDocumentApi,
+  createRewriteJobApi,
+  createSummaryJobApi,
+  getAiJobStatusApi,
   getDocumentByIdApi,
   getDocumentsByCollectionApi,
   getDocumentVersionsApi,
@@ -9,7 +12,7 @@ import {
   summarizeDocumentApi,
   updateDocumentApi,
 } from "../../api/documentApi";
-import type { DocumentRewriteRequest, UpdateDocumentRequest } from "./document.types";
+import type { AiJobStatusResponse, CreateRewriteJobRequest, DocumentRewriteRequest, UpdateDocumentRequest } from "./document.types";
 import { useState, useRef, useEffect } from "react";
 
 export const useDocuments = (collectionId: number) => {
@@ -194,5 +197,35 @@ export const useRewriteDocument = (documentId: number) => {
   return useMutation({
     mutationFn: (data: DocumentRewriteRequest) =>
       rewriteDocumentApi({ documentId, data }),
+  });
+};
+
+// Async api
+export const useCreateSummaryJob = (documentId: number) => {
+  return useMutation({
+    mutationFn: () => createSummaryJobApi(documentId),
+  });
+};
+
+export const useCreateRewriteJob = (documentId: number) => {
+  return useMutation({
+    mutationFn: (data: CreateRewriteJobRequest) =>
+      createRewriteJobApi({ documentId, data }),
+  });
+};
+
+export const useAiJobStatus = (
+  jobId: number | null,
+  enabled: boolean = true
+) => {
+  return useQuery<AiJobStatusResponse>({
+    queryKey: ["aiJob", jobId],
+    queryFn: () => getAiJobStatusApi(jobId as number),
+    enabled: !!jobId && enabled,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      if (!status) return 2000;
+      return status === "COMPLETED" || status === "FAILED" ? false : 2000;
+    },
   });
 };

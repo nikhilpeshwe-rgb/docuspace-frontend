@@ -6,7 +6,10 @@ import type {
     DocumentVersionResponse,
     DocumentSummaryResponse,
     DocumentRewriteRequest,
-    DocumentRewriteResponse
+    DocumentRewriteResponse,
+    AiJobCreatedResponse,
+    AiJobStatusResponse,
+    CreateRewriteJobRequest
 } from "../features/documents/document.types";
 
 export const getDocumentsByCollectionApi = async (
@@ -83,5 +86,34 @@ export const rewriteDocumentApi = async ({
   data: DocumentRewriteRequest;
 }): Promise<DocumentRewriteResponse> => {
   const response = await apiClient.post(`/documents/${documentId}/rewrite`, data);
+  return response.data;
+};
+
+// Async API's
+export const createSummaryJobApi = async (
+  documentId: number
+): Promise<AiJobCreatedResponse> => {
+  const response = await apiClient.post("/ai/jobs/summarize", { documentId });
+  return response.data;
+};
+
+export const createRewriteJobApi = async ({
+  documentId,
+  data,
+}: {
+  documentId: number;
+  data: CreateRewriteJobRequest;
+}): Promise<AiJobCreatedResponse> => {
+  const response = await apiClient.post("/ai/jobs/rewrite", {
+    documentId,
+    mode: data.mode,
+  });
+  return response.data;
+};
+
+export const getAiJobStatusApi = async (
+  jobId: number
+): Promise<AiJobStatusResponse> => {
+  const response = await apiClient.get(`/ai/jobs/${jobId}`);
   return response.data;
 };

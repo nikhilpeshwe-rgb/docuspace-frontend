@@ -50,3 +50,23 @@ export interface DocumentRewriteResponse {
   content: string;
   generatedAt: string;
 }
+
+export type AiJobStatus = "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
+
+export interface AiJobCreatedResponse {
+  jobId: number;
+  status: AiJobStatus;
+}
+
+export interface AiJobStatusResponse {
+  jobId: number;
+  status: AiJobStatus;
+  operationType: "SUMMARY" | "REWRITE";
+  result: DocumentSummaryResponse | DocumentRewriteResponse | null;
+  errorMessage: string | null;
+}
+
+export interface CreateRewriteJobRequest {
+  documentId: number;
+  mode: RewriteMode;
+}
