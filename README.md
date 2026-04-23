@@ -28,7 +28,7 @@ This React-based frontend provides the user interface for:
 ## 🔗 Backend Repository
 
 Backend service:  
-👉 https://github.com/yourname/docuspace-backend
+👉 https://github.com/nikhilpeshwe-rgb/docuspace-backend
 
 ---
 
@@ -42,7 +42,7 @@ Backend service:
 ---
 
 ## 🚀 Running Locally
-```bash
+
 npm install
 npm run dev
 
@@ -50,5 +50,3 @@ npm run dev
 Rich text editor
 Document version history UI
 AI interaction UI (semantic search, agent workflows)
-npm install
-npm run dev
