@@ -1,4 +1,4 @@
-```markdown
+
 # DocuSpace Frontend
 
 Frontend for DocuSpace — an AI-powered document workspace platform.
@@ -50,8 +50,5 @@ npm run dev
 Rich text editor
 Document version history UI
 AI interaction UI (semantic search, agent workflows)
-
-```
-```bash
 npm install
 npm run dev
